@@ -4,7 +4,6 @@ import imgs,files
 
 def compute(in_path,out_path,upsample=False):
     seq_dict=imgs.read_seqs(in_path)
-#    extract=Extractor()
     files.make_dir(out_path)
     for name_i,seq_i in seq_dict.items():
         feat_seq_i=extract(seq_i)
@@ -14,9 +13,13 @@ def compute(in_path,out_path,upsample=False):
 
 def extract(frames):
     pclouds=prepare_pclouds(frames)
-    pclouds=outliner(pclouds)
-    feats=np.array([std_feat(pcloud_i) for pcloud_i in pclouds])
-    return np.array(feats)
+#    pclouds=outliner(pclouds)
+    feats0=np.array([max_z(pcloud_i) for pcloud_i in pclouds])
+#    feats1=np.array([skew_feat(pcloud_i) for pcloud_i in pclouds])
+#    feats2=np.array([corl(pcloud_i) for pcloud_i in pclouds])
+#    feats3=np.array([std_feat(pcloud_i) for pcloud_i in pclouds])
+#    full=np.concatenate([feats0,feats1,feats2,feats3],axis=1)
+    return feats0
 
 def prepare_pclouds(frames):
     pclouds=[nonzero_points(frame_i) for frame_i in frames]
@@ -38,8 +41,15 @@ def center_of_mass(pclouds):
             all_points.append(point_j)
     return np.mean(all_points,axis=0)
 
+def get_max(pclouds):
+    return np.amax([ np.amax(pcloud_i,axis=1) 
+                      for pcloud_i in pclouds],axis=0)
+
 def outliner(pclouds):
-    return [ pcloud_i *pcloud_i*np.sign(pcloud_i) for pcloud_i in pclouds ]
+    out=[ pcloud_i *pcloud_i*np.sign(pcloud_i) for pcloud_i in pclouds ]
+    pc_max=get_max(out)
+    pclouds=[ (pcloud_i.T/pc_max).T for pcloud_i in pclouds]
+    return pclouds
 
 #def area(frame_i):
 #    return [np.count_nonzero(frame_i)/np.prod(frame_i.shape)]
@@ -62,4 +72,4 @@ def corl(points):
     return [pearsonr(x,y)[0],pearsonr(z,y)[0],pearsonr(x,z)[0]]
 
 
-compute("../MSR_att/box","std")
+compute("../MSR_att/box","seqs/max_z")
