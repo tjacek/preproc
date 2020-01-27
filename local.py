@@ -1,70 +1,65 @@
 import numpy as np
-from scipy.interpolate import CubicSpline
 from scipy.stats import skew,pearsonr
 import imgs,files
 
-class Extractor(object):
-    def __init__(self):
-        self.fun=[max_z]#[area,max_z]
-        self.points=None#[moments,corl]
+def compute(in_path,out_path,upsample=False):
+    seq_dict=imgs.read_seqs(in_path)
+#    extract=Extractor()
+    files.make_dir(out_path)
+    for name_i,seq_i in seq_dict.items():
+        feat_seq_i=extract(seq_i)
+        name_i=name_i.split('.')[0]+'.txt'
+        out_i=out_path+'/'+name_i
+        np.savetxt(out_i,feat_seq_i,delimiter=',')
 
-    def __call__(self,frame_i):
-        frame_feats=[]
-        if(self.fun):
-            for fun_j in self.fun:
-                frame_feats+=fun_j(frame_i)
-        points=nonzero_points(frame_i)
-        if(self.points):
-            for fun_j in self.points:
-                frame_feats+=fun_j(points)
-        return frame_feats
+def extract(frames):
+    pclouds=prepare_pclouds(frames)
+    pclouds=outliner(pclouds)
+    feats=np.array([std_feat(pcloud_i) for pcloud_i in pclouds])
+    return np.array(feats)
+
+def prepare_pclouds(frames):
+    pclouds=[nonzero_points(frame_i) for frame_i in frames]
+    center=center_of_mass(pclouds)
+    return [(pcloud_i.T-center).T for pcloud_i in pclouds]
 
 def nonzero_points(frame_i):
     xy_nonzero=np.nonzero(frame_i)
     z_nozero=frame_i[xy_nonzero]
-    xy_nonzero,z_nozero=np.array(xy_nonzero),np.expand_dims(z_nozero,axis=0)
-    return np.concatenate([xy_nonzero,z_nozero],axis=0)
+    xy_nonzero,z_nozero=np.array(xy_nonzero),z_nozero#np.expand_dims(z_nozero,axis=0)
+    x= xy_nonzero[0] / frame_i.shape[0]
+    y= xy_nonzero[1] / frame_i.shape[1]
+    return np.array([x,y,z_nozero])
 
-def compute(in_path,out_path,upsample=False):
-    seq_dict=imgs.read_seqs(in_path)
-    extract=Extractor()
-    files.make_dir(out_path)
-    for name_i,seq_i in seq_dict.items():
-        feat_seq_i=np.array([extract(frame_i) for frame_i in seq_i])
-        name_i=name_i.split('.')[0]+'.txt'
-        out_i=out_path+'/'+name_i
-        if(upsample):
-            feat_seq_i=upsampling(feat_seq_i)
-        np.savetxt(out_i,feat_seq_i,delimiter=',')
+def center_of_mass(pclouds):
+    all_points=[]
+    for pcloud_i in pclouds:
+        for point_j in pcloud_i.T:
+            all_points.append(point_j)
+    return np.mean(all_points,axis=0)
 
-def area(frame_i):
-    return [np.count_nonzero(frame_i)/np.prod(frame_i.shape)]
+def outliner(pclouds):
+    return [ pcloud_i *pcloud_i*np.sign(pcloud_i) for pcloud_i in pclouds ]
 
-def max_z(frame_i):
-    max_cord=np.unravel_index(frame_i.argmax(), frame_i.shape)
-    return [(max_cord[0]/frame_i.shape[0]), (max_cord[1]/frame_i.shape[1])]
+#def area(frame_i):
+#    return [np.count_nonzero(frame_i)/np.prod(frame_i.shape)]
 
-def moments(points):
-    std_i=list(np.std(points,axis=1))
+def max_z(points):
+    max_index=np.argmax(points[2])
+    extr=points[:,max_index]
+    return [extr[0],extr[1]]
+
+def std_feat(points):
+    return list(np.std(points,axis=1))
+
+def skew_feat(points):
+#    std_i=list(np.std(points,axis=1))
     skew_i=list(skew(points,axis=1))
-    return std_i+skew_i
+    return skew_i
 
 def corl(points):
     x,y,z=points[0],points[1],points[2]
     return [pearsonr(x,y)[0],pearsonr(z,y)[0],pearsonr(x,z)[0]]
 
-def upsampling(seq_j,new_size=128):
-    feats=[spline(feat_i,new_size) for feat_i in np.array(seq_j).T]
-    return np.array(feats).T
 
-def spline(feat_i,new_size=128):
-    old_size=feat_i.shape[0]
-    old_x=np.arange(old_size).astype(float)  
-    step=float(new_size)/float(old_size)
-    old_x*=step     
-    cs=CubicSpline(old_x,feat_i)
-    new_size=np.arange(new_size)  
-    return cs(new_size)
-
-
-compute("../MSR_att/box","../MSR_att/seqs")
+compute("../MSR_att/box","std")
