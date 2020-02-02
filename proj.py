@@ -1,17 +1,17 @@
 import numpy as np,cv2
 import imgs
 
-def outliner_transform(in_path,out_path,dims=0):
+def proj_transform(in_path,out_path,dims=0):
     def helper(frames):
         pclouds=[ nonzero_points(frame_i) for frame_i in frames]
         pclouds=normalize(pclouds)
         new_frames=[get_proj(pcloud_i,dims) for pcloud_i in pclouds]
         new_frames=[smooth_proj(frame_i) for frame_i in new_frames]       
-        action_img=diff_img(new_frames) 
-        return action_img
+#        action_img=diff_img(new_frames) 
+        return new_frames
     transform=[helper,scale]    
-    imgs.action_img(in_path,out_path,transform)
-#    imgs.transform(in_path,out_path,transform)
+#    imgs.action_img(in_path,out_path,transform)
+    imgs.transform(in_path,out_path,transform)
 
 def nonzero_points(frame_i):
     xy_nonzero=np.nonzero(frame_i)
@@ -22,15 +22,12 @@ def nonzero_points(frame_i):
     return np.array([x,y,z_nozero])
 
 def get_proj(pclouds,dims):
-
     img_i=np.zeros((128,128),dtype=float)
     x,y=dims,(dims+1)%3
     for point_j in pclouds:
         x_j,y_j=int(point_j[x]),int(point_j[y])
         if( x_j<128  and y_j<128):
             img_i[x_j][y_j]=200
-#        else:
-#            print(x_j,y_j)
     return img_i
 
 def normalize(pclouds):
@@ -66,8 +63,7 @@ def scale(binary_img ,dim_x=64,dim_y=64):
 def diff_img(frames):
     return [ np.abs(frames[i] -frames[i-1])
                 for i in range(1,len(frames))]
-#    return np.mean(frames,axis=0)
 
 if __name__ == "__main__":
-    #outliner_transform("../MSR_raw/box","../MSR_raw/xz",2)
-    imgs.concat_frames("../MSR_full/xy","../MSR_full/xz","../MSR_full/full")
+#   proj_transform("../MHAD/box","../MHAD/proj/yz",2)
+    imgs.concat_seq("../MHAD/proj/tmp","../MHAD/proj/yz","../MHAD/proj/full")
