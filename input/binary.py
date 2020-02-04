@@ -4,6 +4,8 @@ import cv2
 import files
 #from preproc.binary import standarize 
 
+
+
 def convert_inert(in_path,out_path):
     paths=files.top_files(in_path)
     files.make_dir(out_path)
@@ -22,11 +24,8 @@ def convert(in_path,out_path):
         files.make_dir(out_i)
         mat_i = scipy.io.loadmat(path_i)
         seq_i=mat_i['d_depth']
+        max_z=np.amax(seq_i)
         for j,frame_j in enumerate(seq_i.T):
             frame_name_j=out_i+'/'+str(j)+".png"
-#            frame_j= standarize(frame_j.T) 
+            frame_j= (frame_j/max_z)*192.0 
             cv2.imwrite(frame_name_j,frame_j.T)
-
-in_path="../../common/raw/MHAD"
-out_path="../MHAD2/raw"
-convert(in_path,out_path)
