@@ -11,20 +11,23 @@ def compute(in_path,out_path,upsample=False):
         out_i=out_path+'/'+name_i
         np.savetxt(out_i,feat_seq_i,delimiter=',')
 
-def extract(frames):
+def extract(frames,feat_type='max_z'):
     pclouds=prepare_pclouds(frames)
-    pclouds=outliner(pclouds)
+    if(feat_type=='max_z'):
+        feats0=np.array([max_z(pcloud_i) for pcloud_i in pclouds])
+        return feats0
+#    pclouds=outliner(pclouds)
 #    feats0=np.array([max_z(pcloud_i) for pcloud_i in pclouds])
 #    feats1=np.array([skew_feat(pcloud_i) for pcloud_i in pclouds])
 #    feats2=np.array([corl(pcloud_i) for pcloud_i in pclouds])
-    feats3=np.array([std_feat(pcloud_i) for pcloud_i in pclouds])
+#    feats3=np.array([std_feat(pcloud_i) for pcloud_i in pclouds])
 #    full=np.concatenate([feats0,feats1,feats2,feats3],axis=1)
-    return feats3
+#    return feats3
 
 def prepare_pclouds(frames):
-    pclouds=[pclouds.nonzero_points(frame_i) for frame_i in frames]
-    center=pclouds.center_of_mass(pclouds)
-    return [(pcloud_i.T-center).T for pcloud_i in pclouds]
+    pc_frames=[pclouds.nonzero_points(frame_i) for frame_i in frames]
+    center=pclouds.center_of_mass(pc_frames)
+    return [(pcloud_i.T-center).T for pcloud_i in pc_frames]
 
 def get_max(pclouds):
     return np.amax([ np.amax(pcloud_i,axis=1) 
@@ -57,4 +60,4 @@ def corl(points):
     return [pearsonr(x,y)[0],pearsonr(z,y)[0],pearsonr(x,z)[0]]
 
 
-compute("../MHAD2/box","../MHAD2/seqs/std")
+compute("../MHAD3/box","../MHAD3/seqs/max_z")
