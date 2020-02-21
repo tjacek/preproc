@@ -6,7 +6,7 @@ def time(in_path,out_path):
         size=len(frames)
         return [ np.concatenate([frames[i-1],frames[i]],axis=0) 
                     for i in range(1,size)]
-    transform=[helper,proj.scale]                
+    transform=[proj.scale,helper]                
     imgs.transform(in_path,out_path,transform,single_frame=False)
 
-time("../MSR/box","../MSR/time")
+time("../MSR/ens1/box","../MSR/ens3/time")
