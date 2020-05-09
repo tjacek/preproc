@@ -9,11 +9,19 @@ def time(in_path,out_path):
     transform=[proj.scale,helper]                
     imgs.transform(in_path,out_path,transform,single_frame=False)
 
-def sum_img(in_path,out_path):
-    def sum_fun(frames):
-        action_img=np.mean(frames,axis=0)
-        return action_img
-    imgs.action_img(in_path,out_path,sum_fun)
+def diff_img(in_path,out_path):
+    fun=[mean_y]
+    imgs.action_img(in_path,out_path,fun)
 
-#sum_img("proj/Z","action/Z")
-imgs.concat_seq("action/Y","action/Z","action/YZ")
+def mean(frames):
+    return np.mean(frames,axis=0)
+
+def mean_y(frames):
+    return np.mean(frames,axis=1)
+
+def diff(frames):
+    return [ np.abs(frames[i] -frames[i-1])
+                for i in range(1,len(frames))]
+
+diff_img("proj/X","action/X")
+#imgs.concat_frames("action/X","action/YZ","action/full")
