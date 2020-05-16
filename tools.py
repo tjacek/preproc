@@ -1,5 +1,6 @@
-import numpy as np
+import numpy as np,cv2
 import imgs,proj
+from scipy import ndimage
 
 def time(in_path,out_path):
     def helper(frames):
@@ -10,7 +11,7 @@ def time(in_path,out_path):
     imgs.transform(in_path,out_path,transform,single_frame=False)
 
 def diff_img(in_path,out_path):
-    fun=[mean_y]
+    fun=[mean_y,get_rescale(96,64)]
     imgs.action_img(in_path,out_path,fun)
 
 def mean(frames):
@@ -23,5 +24,15 @@ def diff(frames):
     return [ np.abs(frames[i] -frames[i-1])
                 for i in range(1,len(frames))]
 
-diff_img("proj/X","action/X")
-#imgs.concat_frames("action/X","action/YZ","action/full")
+def get_rescale(dim_x,dim_y):
+    def rescale(img_i):
+        return cv2.resize(img_i,(dim_x,dim_y), interpolation = cv2.INTER_CUBIC)
+    return rescale
+
+def median_smooth(img_i):
+    return ndimage.median_filter(img_i ,7)
+
+
+#diff_img("proj/Z","action/Z")
+#imgs.concat_frames("action/Y","action/Z","action/YZ")
+imgs.concat_frames("action/X","action/YZ","action/full")
