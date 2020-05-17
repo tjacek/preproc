@@ -1,27 +1,17 @@
-import numpy as np
-import imgs,proj
+import os.path
+import proj_center,files,imgs
 
-def full_proj(in_path,out_path,dim=2):  
-    def helper(frames):
-        frames=frame_proj(frames,dim)
-        frames=np.array(frames,dtype=float)
-#        frames[frames!=0]=1
-        frames=proj.diff_img(frames)
+def gen_proj(in_path):
+    dir_path=os.path.split(in_path)[0]
+    proj_path=dir_path+"/proj"
+    files.make_dir(proj_path)
+    names=["xy","zy","xz"]
+    names=[ "%s/%s" % (proj_path,name_i) for name_i in names]
+    for i,name_i in enumerate(names):
+        proj_center.proj_transform(in_path,name_i,i)
+    tmp_path="%s/%s" % (proj_path,"tmp")   
+    imgs.concat_seq(names[1],names[2],tmp_path)
+    full_path="%s/%s" % (proj_path,"full")   
+    imgs.concat_seq(names[0],tmp_path,full_path)
 
-#        for i,frame_i in enumerate(frames):
-#            frame_i[frame_i!=0]=1.0
-        action_img=np.sum(frames,axis=2)
-        return action_img
-#        raise Exception(action_img.shape)
-    transform=[helper,proj.scale]    
-    imgs.action_img(in_path,out_path,transform)
-
-
-def frame_proj(frames,dim):
-    pclouds=[ proj.nonzero_points(frame_i) for frame_i in frames]
-    pclouds=proj.normalize(pclouds)
-    return [proj.get_proj(pcloud_i,dim) for pcloud_i in pclouds]
-
-
-full_proj("../MSR/box","../MSR_full/xz")
-#print( np.array(list(seqs.values())[0]).shape )
+gen_proj("MHAD/box")
