@@ -1,16 +1,30 @@
 import numpy as np,cv2
-import imgs
+import imgs,gc,files
 
-def proj_transform(in_path,out_path,dims=0):
-    def helper(frames):
+class Proj(object):
+    def __init__(self,dim):
+        self.dim=dim
+
+    def __call__(self,frames):
         pclouds=[ nonzero_points(frame_i) for frame_i in frames]
         pclouds=normalize(pclouds)
-        new_frames=[get_proj(pcloud_i,dims) for pcloud_i in pclouds]
+        new_frames=[get_proj(pcloud_i,self.dim) for pcloud_i in pclouds]
         new_frames=[smooth_proj(frame_i) for frame_i in new_frames]       
-#        action_img=diff_img(new_frames) 
         return new_frames
-    transform=[helper,scale]    
-#    imgs.action_img(in_path,out_path,transform)
+
+def full_proj(box_path,out_path):
+    proj_funcs=[Proj(0),Proj(1),Proj(2)]
+    seqs=imgs.read_seqs(box_path)
+    files.make_dir(out_path)
+    for name_j,seq_i in seqs.items():
+        print(name_j)
+        proj_seq_i=[proj_i(seq_i) for proj_i in proj_funcs]
+        new_imgs=np.concatenate(proj_seq_i,axis=1)
+        out_i="%s/%s" % (out_path,name_j)
+        imgs.save_frames(out_i,new_imgs)
+
+def proj_transform(in_path,out_path,dims=0):
+    transform=[Proj(dims),scale]    
     imgs.transform(in_path,out_path,transform)
 
 def nonzero_points(frame_i):
@@ -50,19 +64,15 @@ def smooth_proj(proj_i):
     if(type(proj_i)==list):
         return [smooth_proj(frame_j) for frame_j in proj_i]
     kernel2= np.ones((3,3),np.uint8)
+#    proj_i=proj_i.astype(float)
     proj_i = cv2.dilate(proj_i,kernel2,iterations = 1)#
     proj_i[proj_i!=0]=200.0
     return proj_i
 
 def scale(binary_img ,dim_x=64,dim_y=64):
     if(type(binary_img)==list):
-        return [  scale(frame_i,dim_x,dim_y) for frame_i in binary_img]
-    
+        return [  scale(frame_i,dim_x,dim_y) for frame_i in binary_img]    
     return cv2.resize(binary_img,(dim_x,dim_y), interpolation = cv2.INTER_CUBIC)
-
-def diff_img(frames):
-    return [ np.abs(frames[i] -frames[i-1])
-                for i in range(1,len(frames))]
 
 if __name__ == "__main__":
 #   proj_transform("../MHAD/box","../MHAD/proj/yz",2)
