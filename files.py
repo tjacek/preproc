@@ -28,3 +28,12 @@ def make_dir(path):
 def clean_str(name_i):
     digits=[ str(int(digit_i)) for digit_i in re.findall(r'\d+',name_i)]
     return "_".join(digits)
+
+def filtr(seq_dict):
+    return { name_i:seq_i 
+                for name_i,seq_i in seq_dict.items()
+                    if(person_select(name_i)) }
+
+def person_select(name_i):
+    name_i=clean_str(name_i)
+    return (int(name_i.split('_')[1]) % 2)==1

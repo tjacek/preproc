@@ -1,4 +1,4 @@
-import cv2,imgs,proj
+import cv2,imgs,proj,files
 
 class ScaleAgum(object):
     def __init__(self,delta_x,delta_y):
@@ -14,10 +14,12 @@ class ScaleAgum(object):
 
 def proj_agum(in_path,out_path):
     seqs=imgs.read_seqs(in_path)
-    params=[(3,3),(6,6)]
+    proj.full_proj(seqs,out_path,(3,3))
+    train_seqs=files.filtr(seqs)
+    params=[(6,6)]
     for i,param_i in enumerate(params):
-        seq_i={ ("%s_%d"%(name_i,i)):seq_i for name_i,seq_i in seqs.items()}
-        proj.full_proj(seq_i,out_path)
+        seq_i={ ("%s_%d"%(name_i,i)):seq_i for name_i,seq_i in train_seqs.items()}
+        proj.full_proj(seq_i,out_path,param_i)
 
 def agum_frames(frame_path,out_path,agum):
     seqs=imgs.read_seqs(frame_path)
