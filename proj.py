@@ -14,9 +14,10 @@ class Proj(object):
                         for frame_i in new_frames]       
         return new_frames
 
-def full_proj(box_path,out_path):
-    proj_funcs=[Proj(0),Proj(1),Proj(2)]
-    seqs=imgs.read_seqs(box_path)
+def full_proj(seqs,out_path,kern_size=(3,3)):
+    proj_funcs=[Proj(i,kern_size) for i in range(3)]
+    if(type(seqs)==str):
+        seqs=imgs.read_seqs(seqs)
     files.make_dir(out_path)
     for name_j,seq_i in seqs.items():
         print(name_j)

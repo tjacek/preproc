@@ -1,4 +1,4 @@
-import cv2,imgs
+import cv2,imgs,proj
 
 class ScaleAgum(object):
     def __init__(self,delta_x,delta_y):
@@ -12,6 +12,13 @@ class ScaleAgum(object):
         return [cv2.resize(frame_i,(new_x,new_y), interpolation = cv2.INTER_CUBIC)
                     for frame_i in frames]
 
+def proj_agum(in_path,out_path):
+    seqs=imgs.read_seqs(in_path)
+    params=[(3,3),(6,6)]
+    for i,param_i in enumerate(params):
+        seq_i={ ("%s_%d"%(name_i,i)):seq_i for name_i,seq_i in seqs.items()}
+        proj.full_proj(seq_i,out_path)
+
 def agum_frames(frame_path,out_path,agum):
     seqs=imgs.read_seqs(frame_path)
     agum_seqs=[]
@@ -22,4 +29,5 @@ def agum_frames(frame_path,out_path,agum):
     agum_seqs=dict(agum_seqs)                
     imgs.save_seqs(agum_seqs,out_path)
 
-agum_frames("../agum/full","../agum/scale",[ScaleAgum(1.0,1.25)])
+#agum_frames("../agum/full","../agum/scale",[ScaleAgum(1.0,1.25)])
+proj_agum("../agum/box","../agum/smooth_agum")
