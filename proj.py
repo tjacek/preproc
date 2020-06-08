@@ -2,14 +2,16 @@ import numpy as np,cv2
 import imgs,gc,files
 
 class Proj(object):
-    def __init__(self,dim):
+    def __init__(self,dim,kern_size=(3,3)):
         self.dim=dim
+        self.kern_size=kern_size
 
     def __call__(self,frames):
         pclouds=[ nonzero_points(frame_i) for frame_i in frames]
         pclouds=normalize(pclouds)
         new_frames=[get_proj(pcloud_i,self.dim) for pcloud_i in pclouds]
-        new_frames=[smooth_proj(frame_i) for frame_i in new_frames]       
+        new_frames=[smooth_proj(frame_i,self.kern_size) 
+                        for frame_i in new_frames]       
         return new_frames
 
 def full_proj(box_path,out_path):
@@ -18,7 +20,7 @@ def full_proj(box_path,out_path):
     files.make_dir(out_path)
     for name_j,seq_i in seqs.items():
         print(name_j)
-        proj_seq_i=[proj_i(seq_i) for proj_i in proj_funcs]
+        proj_seq_i=[scale(proj_i(seq_i)) for proj_i in proj_funcs]
         new_imgs=np.concatenate(proj_seq_i,axis=1)
         out_i="%s/%s" % (out_path,name_j)
         imgs.save_frames(out_i,new_imgs)
@@ -60,11 +62,10 @@ def get_max(pclouds):
     return np.amax([ np.amax(pcloud_i,axis=0) 
                       for pcloud_i in pclouds],axis=0).T
 
-def smooth_proj(proj_i):
+def smooth_proj(proj_i,kern_size=(3,3)):
     if(type(proj_i)==list):
         return [smooth_proj(frame_j) for frame_j in proj_i]
-    kernel2= np.ones((3,3),np.uint8)
-#    proj_i=proj_i.astype(float)
+    kernel2= np.ones(kern_size,np.uint8)
     proj_i = cv2.dilate(proj_i,kernel2,iterations = 1)#
     proj_i[proj_i!=0]=200.0
     return proj_i
