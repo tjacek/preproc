@@ -15,21 +15,26 @@ class Proj(object):
         return new_frames
 
 def full_proj(seqs,out_path,kern_size=(3,3)):
-    proj_funcs=[Proj(i,kern_size) for i in range(3)]
+    def proj_factory(i):
+        funcs=[tools.median_smooth,Proj(i,kern_size),scale]
+        return imgs.Pipeline(funcs)
+    proj_funcs=[proj_factory(i) for i in range(3)]
+    proj_template(seqs,out_path,proj_funcs)
+
+def proj_template(seqs,out_path,proj_funcs):
     if(type(seqs)==str):
         seqs=imgs.read_seqs(seqs)
-        seqs=imgs.seq_tranform(tools.median_smooth,seqs)
     files.make_dir(out_path)
     for name_j,seq_i in seqs.items():
         print(name_j)
-        proj_seq_i=[scale(proj_i(seq_i)) for proj_i in proj_funcs]
+        proj_seq_i=[proj_i(seq_i) for proj_i in proj_funcs]
         new_imgs=np.concatenate(proj_seq_i,axis=1)
         out_i="%s/%s" % (out_path,name_j)
         imgs.save_frames(out_i,new_imgs)
 
-def proj_transform(in_path,out_path,dims=0):
-    transform=[Proj(dims),scale]    
-    imgs.transform(in_path,out_path,transform)
+#def proj_transform(in_path,out_path,dims=0):
+#    transform=[Proj(dims),scale]    
+#    imgs.transform(in_path,out_path,transform)
 
 def nonzero_points(frame_i):
     xy_nonzero=np.nonzero(frame_i)

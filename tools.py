@@ -31,10 +31,5 @@ def get_rescale(dim_x,dim_y):
 
 def median_smooth(img_i):
     if(type(img_i)==list):
-        return [median_smooth(frame_i) for frame_i in frames]
+        return [median_smooth(frame_i) for frame_i in img_i]
     return ndimage.median_filter(img_i ,7)
-
-
-#diff_img("proj/Z","action/Z")
-#imgs.concat_frames("action/Y","action/Z","action/YZ")
-imgs.concat_frames("action/X","action/YZ","action/full")
