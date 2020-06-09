@@ -30,6 +30,8 @@ def get_rescale(dim_x,dim_y):
     return rescale
 
 def median_smooth(img_i):
+    if(type(img_i)==list):
+        return [median_smooth(frame_i) for frame_i in frames]
     return ndimage.median_filter(img_i ,7)
 
 

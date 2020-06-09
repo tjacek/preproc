@@ -1,5 +1,5 @@
 import numpy as np,cv2
-import imgs,gc,files
+import imgs,files,tools
 
 class Proj(object):
     def __init__(self,dim,kern_size=(3,3)):
@@ -18,6 +18,7 @@ def full_proj(seqs,out_path,kern_size=(3,3)):
     proj_funcs=[Proj(i,kern_size) for i in range(3)]
     if(type(seqs)==str):
         seqs=imgs.read_seqs(seqs)
+        seqs=imgs.seq_tranform(tools.median_smooth,seqs)
     files.make_dir(out_path)
     for name_j,seq_i in seqs.items():
         print(name_j)
@@ -77,5 +78,4 @@ def scale(binary_img ,dim_x=64,dim_y=64):
     return cv2.resize(binary_img,(dim_x,dim_y), interpolation = cv2.INTER_CUBIC)
 
 if __name__ == "__main__":
-#   proj_transform("../MHAD/box","../MHAD/proj/yz",2)
-    imgs.concat_seq("../MHAD/proj/tmp","../MHAD/proj/yz","../MHAD/proj/full")
+    full_proj("../agum/box","../agum/full")
