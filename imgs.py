@@ -1,4 +1,4 @@
-import cv2,numpy as np
+import cv2,numpy as np#,os.path
 import files
 
 class Pipeline(object):
@@ -37,6 +37,8 @@ def action_img(in_path,out_path,action_fun):
         cv2.imwrite(out_i,action_img_i)
 
 def seq_tranform(frame_fun,img_seqs):
+    if(type(frame_fun)==list):
+        frame_fun=Pipeline(frame_fun)
     return { name_i:[frame_fun(frame_j) for frame_j in seq_i]
                     for name_i,seq_i in img_seqs.items()}
 
@@ -65,7 +67,7 @@ def read_frames(seq_path_i,as_dict=False):
 def save_frames(seq_path_i,seq_i):
     files.make_dir(seq_path_i)
     for j,frame_j in enumerate(seq_i):     
-        frame_name_j=seq_path_i+'/'+str(j)+".png"
+        frame_name_j="%s/%d.png" % (seq_path_i,j)  
         cv2.imwrite(frame_name_j,frame_j)
 
 def concat_seq(in_path1,in_path2,out_path):

@@ -40,8 +40,8 @@ def nonzero_points(frame_i):
     xy_nonzero=np.nonzero(frame_i)
     z_nozero=frame_i[xy_nonzero]
     xy_nonzero,z_nozero=np.array(xy_nonzero),z_nozero#np.expand_dims(z_nozero,axis=0)
-    x= xy_nonzero[0] / frame_i.shape[0]
-    y= xy_nonzero[1] / frame_i.shape[1]
+    x= xy_nonzero[0] 
+    y= xy_nonzero[1]
     return np.array([x,y,z_nozero])
 
 def get_proj(pclouds,dims):
@@ -83,4 +83,4 @@ def scale(binary_img ,dim_x=64,dim_y=64):
     return cv2.resize(binary_img,(dim_x,dim_y), interpolation = cv2.INTER_CUBIC)
 
 if __name__ == "__main__":
-    full_proj("../agum/box","../agum/full")
+    full_proj("../agum/box","proj")
