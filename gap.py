@@ -18,7 +18,6 @@ class GapTransform(object):
                     point_i[1]+=delta
         return points
 
-
 def gap_agum(frames):
     frames=[ proj.nonzero_points(frame_i) 
                     for frame_i in frames]
@@ -36,4 +35,5 @@ def filtr_points(points,threshold):
             new_points.append(point_i)	
     return np.array(new_points).T
 
-imgs.transform("../agum/box","test",gap_agum)
+if __name__ == "__main__":
+    imgs.transform("../agum/box","test",gap_agum)
