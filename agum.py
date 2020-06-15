@@ -27,17 +27,11 @@ def gap_agum(box_path,out_path):
     seqs=imgs.read_seqs(box_path)
     files.make_dir(out_path)
     full_path=out_path+"/full"
-#    proj_center.full_proj(seqs,full_path,(3,3))  
     train=files.filtr(seqs)
     train_gap={name_i:gap.gap_agum(seq_i) 
             for name_i,seq_i in train.items()}
-    #train_gap=imgs.seq_tranform(gap.gap_agum,train)
     agum_path=out_path+"/agum"
-    proj_center.full_proj(train_gap,agum_path,(3,3))
-
-    #gap_path=out_path+"/gap"
-    #imgs.transform(box_path,gap_path,gap.gap_agum)
-
+    proj_center.full_proj(train_gap,agum_path,(6,6))
 
 def simple_agum(box_path,out_path):
     seqs=imgs.read_seqs(box_path)
@@ -48,4 +42,4 @@ def simple_agum(box_path,out_path):
     agum_path=out_path+"/agum"
     proj_center.full_proj(train,agum_path,(6,6))
     
-gap_agum("../agum/box","../agum/gap")
+gap_agum("../box","../smooth/gap")
