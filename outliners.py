@@ -1,3 +1,4 @@
+import numpy as np
 import imgs,proj#,proj_center
 import pclouds
 
@@ -15,9 +16,15 @@ def outliner(frames):
     seq_min=proj.get_min(frames)
     seq_max=proj.get_max(frames)
     def helper(points):
-        neg_indexes=points[1,:]<0
-        points[:,neg_indexes]=0
-        return points
+#        neg=points[:,np.where(points[1,:]<0)]
+#        neg=np.squeeze(neg)
+#        pos=points[:,np.where(points[1,:]>0)]
+#        pos=np.squeeze(neg)
+
+#        points=np.concatenate([pos,neg],axis=1)
+#        raise Exception(points.shape)
+        points=np.array(proj.normalize(points))
+        return pclouds.to_img(points)
     return [ helper(points) for points in frames]
 
 outliner_transform("../agum/box","test")

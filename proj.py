@@ -62,7 +62,9 @@ def normalize(pclouds):
     return pclouds
 
 def get_min(pclouds):
-    return np.amin([ np.amin(pcloud_i,axis=1) 
+#    raise Exception(pclouds[0].shape)
+    axis=1 if(pclouds[0].shape[0]==3) else 0
+    return np.amin([ np.amin(pcloud_i,axis=axis) 
                       for pcloud_i in pclouds],axis=0).T
 
 def get_max(pclouds):
