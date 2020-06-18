@@ -66,7 +66,8 @@ def get_min(pclouds):
                       for pcloud_i in pclouds],axis=0).T
 
 def get_max(pclouds):
-    return np.amax([ np.amax(pcloud_i,axis=0) 
+    axis=1 if(pclouds[0].shape[0]==3) else 0
+    return np.amax([ np.amax(pcloud_i,axis=axis) 
                       for pcloud_i in pclouds],axis=0).T
 
 def smooth_proj(proj_i,kern_size=(3,3)):
