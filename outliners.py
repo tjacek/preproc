@@ -8,7 +8,7 @@ def outliner_transform(in_path,out_path):
             for name_i,seq_i in seqs.items()}
     imgs.save_seqs(seqs,out_path)
 
-def outliner(frames):
+def outliner(frames):#,as_proj=True):
     print(len(frames))
     frames=[ proj.nonzero_points(frame_i) 
                     for frame_i in frames]
@@ -21,12 +21,10 @@ def outliner(frames):
         neg=points[:,np.where(points[1,:]<0)]
         pos=points[:,np.where(points[1,:]>=0)]
         pos=square_scale(pos,max_y)
-        neg=np.squeeze(neg)
+        neg=square_scale(neg,min_y)
         points=np.concatenate([pos,neg],axis=1)
-#        raise Exception(np.amax(points,axis=1))
-#        points=np.squeeze(points)
-        points=np.array(proj.normalize(points))
-        return pclouds.to_img(points)
+        points= (points.T-seq_min.T).T
+        return points.T
     return [ helper(points) for points in frames]
 
 def square_scale(points,const):
@@ -34,9 +32,14 @@ def square_scale(points,const):
     y/=const
     y=y**2
     y*=const
-#    y/= (const**2)
     arrays=[points[0,:],y,points[2,:]]
     new_points=np.concatenate(arrays,axis=0)
     return new_points 
 
-outliner_transform("../agum/box","test")
+def outliner_projection(in_path,out_path):
+    funcs=[outliner,proj.BasicProj(0,(3,3))]
+    funcs= [imgs.Pipeline(funcs)]
+    proj.proj_template(in_path,out_path,funcs)
+
+
+outliner_projection("../agum/box","test")
