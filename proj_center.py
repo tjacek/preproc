@@ -3,17 +3,13 @@ import proj,imgs,pclouds,tools
 
 class CenterProj(object):
     def __init__(self,dim,kern_size=(3,3)):
-        self.dim=dim
-        self.kern_size=kern_size
+        self.basic_proj=proj.BasicProj(dim,kern_size)
 
     def __call__(self,frames):
         frames=[ proj.nonzero_points(frame_i) 
                     for frame_i in frames]
-        frames=center(frames)
-        new_frames=[proj.get_proj(pcloud_i.T,self.dim) 
-                        for pcloud_i in frames]
-        new_frames=[proj.smooth_proj(frame_i,self.kern_size) 
-                        for frame_i in new_frames]
+        pclouds=center(frames) 
+        new_frames=self.basic_proj(pclouds)
         return new_frames
 
 def full_proj(seqs,out_path,kern_size=(3,3)):
