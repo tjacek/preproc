@@ -1,6 +1,6 @@
 import numpy as np
 import imgs,proj,proj_center
-import pclouds
+import pclouds,tools
 
 def outliner_transform(in_path,out_path):
     seqs=imgs.read_seqs(in_path)
@@ -9,7 +9,6 @@ def outliner_transform(in_path,out_path):
     imgs.save_seqs(seqs,out_path)
 
 def outliner(frames):#,as_proj=True):
-    print(len(frames))
     frames=[ proj.nonzero_points(frame_i) 
                     for frame_i in frames]
     center=pclouds.center_of_mass(frames)
@@ -37,9 +36,12 @@ def square_scale(points,const):
     return new_points 
 
 def outliner_projection(in_path,out_path):
-    funcs=[outliner,proj_center.center_norm,proj.BasicProj(1,(3,3))]
-    funcs= [imgs.Pipeline(funcs)]
-    proj.proj_template(in_path,out_path,funcs)
-
+    preproc=[tools.median_smooth,outliner,proj_center.center_norm]
+    def proj_factory(i):
+        proj_i=proj.BasicProj(i,(3,3))
+        funcs=preproc+[proj_i,proj.scale]
+        return imgs.Pipeline(funcs)
+    proj_funcs=[proj_factory(i) for i in range(3)]
+    proj.proj_template(in_path,out_path,proj_funcs)
 
 outliner_projection("../agum/box","test")
