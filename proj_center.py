@@ -22,12 +22,21 @@ def full_proj(seqs,out_path,kern_size=(3,3)):
 def center(frames):
     center=pclouds.center_of_mass(frames)
     frames=[(pcloud_i.T-center.T).T for pcloud_i in frames]
+#    points=np.concatenate(frames,axis=1)
+#    seq_max=np.amax(np.abs(points),axis=1)
+#    frames=[ 64.0*((pcloud_i.T/seq_max.T).T+1.0) 
+#                    for pcloud_i in frames]
+    return center_norm(frames) #frames
+
+def center_norm(frames):
+#    raise Exception(frames[0].shape)
     points=np.concatenate(frames,axis=1)
     seq_max=np.amax(np.abs(points),axis=1)
-    frames=[ 64.0*((pcloud_i.T/seq_max.T).T+1.0) 
+    frames=[ 64.0*((pcloud_i.T/seq_max.T).T+1.0).T 
                     for pcloud_i in frames]
-    return frames
+#    raise Exception(frames[0].shape)
 
+    return frames
 #def gauss_smooth(img_i):
 #    if(type(img_i)==list):
 #        return [gauss_smooth(img_j)  for img_j in img_i]

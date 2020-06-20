@@ -1,5 +1,5 @@
 import numpy as np
-import imgs,proj#,proj_center
+import imgs,proj,proj_center
 import pclouds
 
 def outliner_transform(in_path,out_path):
@@ -23,8 +23,8 @@ def outliner(frames):#,as_proj=True):
         pos=square_scale(pos,max_y)
         neg=square_scale(neg,min_y)
         points=np.concatenate([pos,neg],axis=1)
-        points= (points.T-seq_min.T).T
-        return points.T
+#        points= (points.T-seq_min.T).T
+        return points
     return [ helper(points) for points in frames]
 
 def square_scale(points,const):
@@ -37,7 +37,7 @@ def square_scale(points,const):
     return new_points 
 
 def outliner_projection(in_path,out_path):
-    funcs=[outliner,proj.BasicProj(0,(3,3))]
+    funcs=[outliner,proj_center.center_norm,proj.BasicProj(1,(3,3))]
     funcs= [imgs.Pipeline(funcs)]
     proj.proj_template(in_path,out_path,funcs)
 
