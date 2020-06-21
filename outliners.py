@@ -35,13 +35,14 @@ def square_scale(points,const):
     new_points=np.concatenate(arrays,axis=0)
     return new_points 
 
-def outliner_projection(in_path,out_path):
+def outliner_projection(in_path,out_path,full=True):
     preproc=[tools.median_smooth,outliner,proj_center.center_norm]
     def proj_factory(i):
         proj_i=proj.BasicProj(i,(3,3))
         funcs=preproc+[proj_i,proj.scale]
         return imgs.Pipeline(funcs)
-    proj_funcs=[proj_factory(i) for i in range(3)]
+    proj_range= range(3) if(full) else range(1,3)
+    proj_funcs=[proj_factory(i) for i in proj_range]
     proj.proj_template(in_path,out_path,proj_funcs)
 
-outliner_projection("../agum/box","test")
+outliner_projection("../box","../outliners/ens/frames",False)
