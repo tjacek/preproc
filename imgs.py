@@ -33,7 +33,7 @@ def action_img(in_path,out_path,action_fun):
     for in_i in files.top_files(in_path):
         frames=read_frames(in_i)
         action_img_i=action_fun(frames)
-        out_i= out_path+'/' + in_i.split('/')[-1]+".png"
+        out_i="%s/%s.png" % (out_path,in_i.split('/')[-1])
         cv2.imwrite(out_i,action_img_i)
 
 def seq_tranform(frame_fun,img_seqs):
