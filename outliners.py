@@ -36,13 +36,17 @@ def square_scale(points,const):
     return new_points 
 
 def outliner_projection(in_path,out_path,full=True):
-    preproc=[tools.median_smooth,outliner,proj_center.center_norm]
-    def proj_factory(i):
-        proj_i=proj.BasicProj(i,(3,3))
-        funcs=preproc+[proj_i,proj.scale]
-        return imgs.Pipeline(funcs)
     proj_range= range(3) if(full) else range(1,3)
-    proj_funcs=[proj_factory(i) for i in proj_range]
+    proj_funcs=[build_proj(i) for i in proj_range]
     proj.proj_template(in_path,out_path,proj_funcs)
 
-outliner_projection("../box","../outliners/ens/frames",False)
+def build_proj(dim,kern=(3,3),pipe=True):
+    proj_i=[tools.median_smooth,outliner,proj_center.center_norm]
+    proj_i.append(proj.BasicProj(dim,kern))
+    if(pipe):
+        proj_i.append(proj.scale)
+        return imgs.Pipeline(proj_i)
+    return proj_i
+
+if __name__ == "__main__":
+    outliner_projection("../box","../outliners/ens/frames",False)
