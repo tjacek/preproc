@@ -30,8 +30,12 @@ def get_min(pclouds):
                       for pcloud_i in pclouds],axis=0)
 
 def to_img(pcloud,scale=128):
+    if(type(pcloud)==list):
+        return [to_img(pcloud_i) for pcloud_i in pcloud]
+    if(pcloud.shape[0]==3):
+        pcloud=pcloud.T
     img_i=np.zeros((scale,scale))
-    for point_j in pcloud.T:
+    for point_j in pcloud:
         x_j,y_j=int(point_j[0]),int(point_j[1])
         if( x_j<scale  and y_j<scale):
             img_i[x_j][y_j]=point_j[2]
