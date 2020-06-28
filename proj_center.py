@@ -12,6 +12,16 @@ class CenterProj(object):
         new_frames=self.basic_proj(pclouds)
         return new_frames
 
+def center_pcloud(frames):
+    frames=[ proj.nonzero_points(frame_i) 
+                    for frame_i in frames]
+    pclouds=center(frames)
+    return pclouds
+
+def imgs_only(in_path,out_path):
+    fun=imgs.Pipeline([center_pcloud,pclouds.to_img])
+    imgs.transform(in_path,out_path,fun)
+
 def full_proj(seqs,out_path,kern_size=(3,3)):
     def proj_factory(i):
         funcs=[tools.median_smooth,CenterProj(i,kern_size),proj.scale]
@@ -22,20 +32,13 @@ def full_proj(seqs,out_path,kern_size=(3,3)):
 def center(frames):
     center=pclouds.center_of_mass(frames)
     frames=[(pcloud_i.T-center.T).T for pcloud_i in frames]
-#    points=np.concatenate(frames,axis=1)
-#    seq_max=np.amax(np.abs(points),axis=1)
-#    frames=[ 64.0*((pcloud_i.T/seq_max.T).T+1.0) 
-#                    for pcloud_i in frames]
-    return center_norm(frames) #frames
+    return center_norm(frames) 
 
 def center_norm(frames):
-#    raise Exception(frames[0].shape)
     points=np.concatenate(frames,axis=1)
     seq_max=np.amax(np.abs(points),axis=1)
     frames=[ 64.0*((pcloud_i.T/seq_max.T).T+1.0).T 
                     for pcloud_i in frames]
-#    raise Exception(frames[0].shape)
-
     return frames
 #def gauss_smooth(img_i):
 #    if(type(img_i)==list):
@@ -43,4 +46,4 @@ def center_norm(frames):
 #    return cv2.GaussianBlur(img_i, (9, 9), 0)
 
 if __name__=='__main__':
-    full_proj("../agum/box","../agum/full_center")
+    imgs_only("../MHAD/box","../MHAD/center")
