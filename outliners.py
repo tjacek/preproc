@@ -35,6 +35,13 @@ def square_scale(points,const):
     new_points=np.concatenate(arrays,axis=0)
     return new_points 
 
+def outliner_img(in_path,out_path):
+    fun=[tools.median_smooth,outliner,
+            proj_center.center_norm,
+            pclouds.to_img,
+            proj.scale]
+    imgs.transform(in_path,out_path,fun)
+
 def outliner_projection(in_path,out_path,full=True):
     proj_range= range(3) if(full) else range(1,3)
     proj_funcs=[build_proj(i) for i in proj_range]
@@ -49,4 +56,5 @@ def build_proj(dim,kern=(3,3),pipe=True):
     return proj_i
 
 if __name__ == "__main__":
-    outliner_projection("../box","../outliners/ens/frames",False)
+#    outliner_projection("../box","../outliners/ens/frames",False)
+    outliner_img("box","test2")
