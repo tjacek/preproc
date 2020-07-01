@@ -1,5 +1,6 @@
 import os.path
-import proj_center,files,imgs
+#import proj_center,files,imgs
+import input.binary
 
 def gen_proj(in_path):
     dir_path=os.path.split(in_path)[0]
@@ -14,4 +15,4 @@ def gen_proj(in_path):
     full_path="%s/%s" % (proj_path,"full")   
     imgs.concat_seq(names[0],tmp_path,full_path)
 
-gen_proj("MHAD/box")
+input.binary.h5_convert("../UWA/raw","../UWA/depth")
