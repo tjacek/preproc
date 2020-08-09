@@ -20,7 +20,7 @@ def get_transform(dim=0,diff=True):
         action_img=np.mean(frames,axis=0)
         return action_img
     preproc=outliners.build_proj(dim,pipe=False)
-    transform=preproc+[helper,proj.scale]
+    transform=preproc+[helper,proj.Scale()]
     return imgs.Pipeline(transform)
 
 all_proj("box","test")
