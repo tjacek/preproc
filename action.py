@@ -5,9 +5,11 @@ def z_action_img(in_path,out_path):
     def helper(frames):
         frames=np.array([z_spot(img_i) for img_i in frames])
         action_i=np.sum(frames,axis=0)
-        action_i[action_i!=0]=100
+        action_i[action_i!=0]=100.0
+        action_i=action_i.astype(float)
         return action_i
-    imgs.action_img(in_path,out_path,helper)
+    funcs=[helper,proj.Scale()]
+    imgs.action_img(in_path,out_path,funcs)
 
 def z_spot(img_i):
     x,y=np.unravel_index(np.argmax(img_i),img_i.shape)
@@ -37,4 +39,4 @@ def z_spot(img_i):
 #    transform=preproc+[helper,proj.Scale()]
 #    return imgs.Pipeline(transform)
 
-z_action_img("box","test")
+z_action_img("../MSR_exp1/box","../MSR_exp1/frames")

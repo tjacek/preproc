@@ -3,14 +3,14 @@ import imgs,files,tools
 
 class Scale(object):
     def __init__(self,dim_x=64,dim_y=64):
-        self.dim_x=dim_x
-        self.dim_y=dim_y
+        self.x=dim_x
+        self.y=dim_y
 
     def __call__(self,binary_img):
         if(type(binary_img)==list):
             return [ self(frame_i) for frame_i in binary_img]    
-        dims=(self.dim_x,self.dim_y)
-        return cv2.resize(binary_img,dims,interpolation=cv2.INTER_CUBIC)
+        dims=(self.x,self.y)
+        return cv2.resize(binary_img,dsize=dims,interpolation=cv2.INTER_CUBIC)
 
 class Proj(object):
     def __init__(self,dim,kern_size=(3,3)):
