@@ -3,18 +3,22 @@ import imgs,proj,outliners,tools
 
 def z_action_img(in_path,out_path):
     def helper(frames):
-        frames=np.array([z_spot(img_i) for img_i in frames])
-        action_i=np.sum(frames,axis=0)
-        action_i[action_i!=0]=100.0
-        action_i=action_i.astype(float)
+        frames=np.array([z_spot(i,img_i) for i,img_i in enumerate(frames)
+                               if(not img_i is None)])
+        action_i=np.mean(frames,axis=0)
+        print(action_i.shape)
+        action_i*=100.0
+#        action_i=action_i.astype(float)
         return action_i
     funcs=[helper,proj.Scale()]
     imgs.action_img(in_path,out_path,funcs)
 
-def z_spot(img_i):
+def z_spot(i,img_i):
     x,y=np.unravel_index(np.argmax(img_i),img_i.shape)
+    img_i=img_i.astype(float)
     img_i.fill(0)
-    img_i[ x-5:x+5, y-5:y+5]=100
+    img_i[ x-5:x+5, y-5:y+5]=float(i)
+
     return img_i
 
 #def single_proj(in_path,out_path,dim=0,diff=True):  
