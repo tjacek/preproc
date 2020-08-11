@@ -3,7 +3,7 @@ import imgs,proj,outliners,tools
 
 def many_action_img(in_path,out_path):
     def helper(frames):
-        img0=simple_proj(frames)
+        img0=medium_reg(frames)
         img1=static_max(frames)
         return np.concatenate([img0,img1],axis=0)
     funcs=[helper,proj.Scale()]
@@ -12,6 +12,10 @@ def many_action_img(in_path,out_path):
 def single_action_img(in_path,out_path):
     funcs=[static_max,proj.Scale()]
     imgs.action_img(in_path,out_path,funcs)
+
+def medium_reg(frames):
+    i= int(len(frames)/2)
+    return frames[i]
 
 def simple_proj(frames):
     frames=np.array(frames)
