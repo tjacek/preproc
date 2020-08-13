@@ -1,17 +1,28 @@
 import numpy as np
 import imgs,proj,outliners,tools
 
-def many_action_img(in_path,out_path):
-    def helper(frames):
-        img0=medium_reg(frames)
-        img1=static_max(frames)
-        return np.concatenate([img0,img1],axis=0)
-    funcs=[helper,proj.Scale()]
-    imgs.action_img(in_path,out_path,funcs)
+class BuildActionImg(object):
+    def __init__(self,funcs):
+        self.funcs=funcs
+        self.scale=proj.Scale()
 
-def single_action_img(in_path,out_path):
-    funcs=[static_max,proj.Scale()]
-    imgs.action_img(in_path,out_path,funcs)
+    def __call__(self,frames):
+        sub_imgs=[func_i(frames) for func_i in self.funcs]
+        sub_imgs=[self.scale(img_i) for img_i in sub_imgs]
+        return np.concatenate(sub_imgs,axis=0)
+
+def many_action_img(in_path,out_path):
+#    def helper(frames):
+#        img0=simple_proj(frames)
+#        img1=time_max(frames)
+#        return np.concatenate([img0,img1],axis=0)
+#    funcs=[helper,proj.Scale()]
+    helper=BuildActionImg([time_max])
+    imgs.action_img(in_path,out_path,helper)
+
+#def single_action_img(in_path,out_path):
+#    funcs=[static_max,proj.Scale()]
+#    imgs.action_img(in_path,out_path,funcs)
 
 def medium_reg(frames):
     i= int(len(frames)/2)
@@ -46,26 +57,4 @@ def z_spot(i,img_i):
 
     return img_i
 
-#def single_proj(in_path,out_path,dim=0,diff=True):  
-#    transform=get_transform(dim,diff)
-#    imgs.action_img(in_path,out_path,transform)
-
-#def all_proj(in_path,out_path,diff=True):
-#    funcs=[get_transform(dim,diff) for dim in range(3)]
-#    def helper(frames):
-#        proj_imgs=[ fun_j(frames) for fun_j in funcs]
-#        return np.concatenate(proj_imgs,axis=0)  
-#    imgs.action_img(in_path,out_path,helper)
-
-#def get_transform(dim=0,diff=True):
-#    def helper(frames):
-#        frames=np.array(frames,dtype=float)
-#        if(diff):
-#            frames=tools.diff(frames)
-#        action_img=np.mean(frames,axis=0)
-#        return action_img
-#    preproc=outliners.build_proj(dim,pipe=False,resize=(96,64))
-#    transform=preproc+[helper,proj.Scale()]
-#    return imgs.Pipeline(transform)
-
-many_action_img("../MSR_exp1/box","../MSR_exp1/frames")
+many_action_img("../MSR_exp1/box","../MSR_exp1/exp2/frames")
