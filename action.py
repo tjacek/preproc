@@ -12,17 +12,19 @@ class BuildActionImg(object):
         return np.concatenate(sub_imgs,axis=0)
 
 def many_action_img(in_path,out_path):
-#    def helper(frames):
-#        img0=simple_proj(frames)
-#        img1=time_max(frames)
-#        return np.concatenate([img0,img1],axis=0)
-#    funcs=[helper,proj.Scale()]
     helper=BuildActionImg([time_max])
     imgs.action_img(in_path,out_path,helper)
 
-#def single_action_img(in_path,out_path):
-#    funcs=[static_max,proj.Scale()]
-#    imgs.action_img(in_path,out_path,funcs)
+def outliner_action_img(in_path,out_path):
+    helper=BuildActionImg([outliner_proj(0),outliner_proj(2),static_max])
+    imgs.action_img(in_path,out_path,helper)
+
+def outliner_proj(i):
+    funcs=outliners.build_proj(i,kern=(3,3),pipe=False)
+    funcs.append(lambda frames:np.mean(frames,axis=0))
+    return imgs.Pipeline(funcs)
+#    helper=BuildActionImg(funcs)
+#    imgs.action_img(in_path,out_path,helper)
 
 def medium_reg(frames):
     i= int(len(frames)/2)
@@ -51,10 +53,9 @@ def time_max(frames):
 
 def z_spot(i,img_i):
     x,y=np.unravel_index(np.argmax(img_i),img_i.shape)
-#    img_i=img_i.astype(float)
     img_i=np.zeros( img_i.shape,dtype=float)
     img_i[ x-5:x+5, y-5:y+5]=float(i)
 
     return img_i
 
-many_action_img("../MSR_exp1/box","../MSR_exp1/exp2/frames")
+outliner_action_img("../MSR_exp1/box","../MSR_exp1/exp2/frames")
