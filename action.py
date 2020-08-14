@@ -11,29 +11,38 @@ class BuildActionImg(object):
         sub_imgs=[self.scale(img_i) for img_i in sub_imgs]
         return np.concatenate(sub_imgs,axis=0)
 
-def many_action_img(in_path,out_path):
-    helper=BuildActionImg([time_max])
-    imgs.action_img(in_path,out_path,helper)
+#def many_action_img(in_path,out_path):
+#    helper=BuildActionImg([time_max])
+#    imgs.action_img(in_path,out_path,helper)
 
 def outliner_action_img(in_path,out_path):
-    helper=BuildActionImg([outliner_proj(0),outliner_proj(2),static_max])
+    helper=BuildActionImg([outliner_proj(0),outliner_proj(2),sub_sample])
     imgs.action_img(in_path,out_path,helper)
 
 def outliner_proj(i):
     funcs=outliners.build_proj(i,kern=(3,3),pipe=False)
     funcs.append(lambda frames:np.mean(frames,axis=0))
     return imgs.Pipeline(funcs)
-#    helper=BuildActionImg(funcs)
-#    imgs.action_img(in_path,out_path,helper)
+
+def sub_sample(frames):
+    size=len(frames)
+    sample=tools.get_sample(frames)
+#    raise Exception( s_frames)
+    max_value=[z_spot(5,frames[i]) 
+                for i in sample(size)]
+    action_i=np.sum(max_value,axis=0)
+    action_i[action_i!=0]=100.0
+    print(action_i.shape)
+    return action_i
 
 def medium_reg(frames):
     i= int(len(frames)/2)
     return frames[i]
 
-def simple_proj(frames):
-    frames=np.array(frames)
-    frames[frames!=0]=1.0
-    return np.sum(frames,axis=0)
+#def simple_proj(frames):
+#    frames=np.array(frames)
+#    frames[frames!=0]=1.0
+#    return np.sum(frames,axis=0)
 
 def static_max(frames):
     frames=np.array([z_spot(1.0,img_i) for i,img_i in enumerate(frames)
@@ -58,4 +67,5 @@ def z_spot(i,img_i):
 
     return img_i
 
-outliner_action_img("../MSR_exp1/box","../MSR_exp1/exp2/frames")
+#outliner_action_img("../MSR_exp1/box","../MSR_exp1/exp2/frames")
+outliner_action_img("box","test")
