@@ -24,10 +24,9 @@ def diff(frames):
     return [ np.abs(frames[i] -frames[i-1])
                 for i in range(1,len(frames))]
 
-#def get_rescale(dim_x,dim_y):
-#    def rescale(img_i):
-#        return cv2.resize(img_i,(dim_x,dim_y), interpolation = cv2.INTER_CUBIC)
-#    return rescale
+def rescale_imgs(in_path,out_path,dim_x=64,dim_y=128):
+    rescale=proj.Scale(dim_x,dim_y)
+    imgs.transform(in_path,out_path,rescale,True)
 
 def median_smooth(img_i):
     if(type(img_i)==list):
