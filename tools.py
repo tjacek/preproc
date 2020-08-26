@@ -50,3 +50,8 @@ def get_squared_dist(n):
     dist=dist**2
     dist/=np.sum(dist)
     return dist
+
+if __name__ == "__main__":
+    in_path="../simple/bound/box"
+    out_path="../simple/bound/exp2/frames"
+    rescale_imgs(in_path,out_path,dim_x=80,dim_y=128)
