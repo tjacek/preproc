@@ -4,14 +4,17 @@ import proj,proj_center,gap
 
 class AgumTemplate(object):
     def __init__(self, agum,read,save):
+        if(type(agum)!=list):
+            agum=[agum]
         self.agum=agum
         self.read=read
         self.save=save
         
     def __call__(self,in_path,out_path):
         samples=self.read(in_path)
+        train=files.filtr(samples)
         agum_samples=[]
-        for name_i,sample_i in samples.items():
+        for name_i,sample_i in train.items():
             agum_samples+=[ ("%s_%d"%(name_i,j),agum_j(sample_i))
                                 for j,agum_j in enumerate(self.agum)]
         all_samples= {**samples,**dict(agum_samples)}
