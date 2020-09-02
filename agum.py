@@ -14,19 +14,28 @@ import proj,proj_center,gap
 #        return [cv2.resize(frame_i,(new_x,new_y), interpolation = cv2.INTER_CUBIC)
 #                    for frame_i in frames]
 
-def agum_action(frame_path,out_path):
-    actions=imgs.read_frames(frame_path,True)
-    agum_actions={}
-    for name_i,action_i in actions.items():
-        new_name="%s_1"% name_i
-        new_action= np.flip(action_i,1)
-        agum_actions[new_name]=new_action
-    all_actions= {**actions,**agum_actions}
-    files.make_dir(out_path)
-    for name_i,action_i in all_actions.items():
-        out_i="%s/%s.png" %(out_path,name_i)
-        print(out_i)
-        cv2.imwrite(out_i,action_i)
+class AgumTemplate(object):
+    def __init__(self, agum):
+        self.agum=agum
+        
+    def __call__(self,in_path,out_path):
+        samples=imgs.read_frames(in_path,True)
+        agum_samples=[]
+        for name_i,sample_i in samples.items():
+            agum_samples+=[ ("%s_%d"%(name_i,j),agum_j(sample_i))
+                                for j,agum_j in enumerate(self.agum)]
+        all_samples= {**samples,**dict(agum_samples)}
+        files.make_dir(out_path)
+        for name_i,action_i in all_samples.items():
+            out_i="%s/%s.png" %(out_path,name_i)
+            print(out_i)
+            cv2.imwrite(out_i,action_i)
+
+def get_action_agum():
+    return AgumTemplate([flip_agum])
+
+def flip_agum(img_i):
+    return np.flip(img_i,1)
 
 def gap_agum(box_path,out_path):
     seqs=imgs.read_seqs(box_path)
@@ -47,4 +56,5 @@ def simple_agum(box_path,out_path):
     agum_path=out_path+"/agum"
     proj_center.full_proj(train,agum_path,(6,6))
     
+agum_action=get_action_agum()
 agum_action("../exp2/frames","../exp2/agum/frames")
