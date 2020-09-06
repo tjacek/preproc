@@ -13,6 +13,7 @@ def outliner(frames):#,as_proj=True):
                     for frame_i in frames]
     center=pclouds.center_of_mass(frames)
     frames=[(pcloud_i.T-center.T).T for pcloud_i in frames]
+    assert len(frames)>0
     seq_min=proj.get_min(frames)
     seq_max=proj.get_max(frames)
     max_y,min_y=seq_max[1],seq_min[1]
@@ -48,13 +49,14 @@ def outliner_projection(in_path,out_path,full=True):
     proj.proj_template(in_path,out_path,proj_funcs)
 
 def build_proj(dim,kern=(3,3),pipe=True):
-    proj_i=[tools.median_smooth,outliner,proj_center.center_norm]
+    proj_i=[#tools.median_smooth,
+                outliner,proj_center.center_norm]
     proj_i.append(proj.BasicProj(dim,kern))
     if(pipe):
-        proj_i.append(proj.scale)
+        proj_i.append(proj.Scale())
         return imgs.Pipeline(proj_i)
     return proj_i
 
 if __name__ == "__main__":
-#    outliner_projection("../box","../outliners/ens/frames",False)
-    outliner_img("box","test2")
+    outliner_projection("../agum/MHAD/center","../agum/MHAD/frames",True)
+#    outliner_img("box","test2")

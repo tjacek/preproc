@@ -36,8 +36,8 @@ class BasicProj(object):
 
 def full_proj(seqs,out_path,kern_size=(3,3)):
     def proj_factory(i):
-#        funcs=[tools.median_smooth,Proj(i,kern_size),scale]
-        funcs=[Proj(i,kern_size),scale]
+        funcs=[tools.median_smooth,Proj(i,kern_size),Scale()]
+#        funcs=[Proj(i,kern_size),scale]
         return imgs.Pipeline(funcs)
     proj_funcs=[proj_factory(i) for i in range(3)]
     proj_template(seqs,out_path,proj_funcs)
@@ -79,6 +79,9 @@ def normalize(pclouds):
     return pclouds
 
 def get_min(pclouds):
+#    if(not pclouds):
+#        return np.Inf
+#    print( [ pcloud_i.shape for pcloud_i in pclouds])
     axis=1 if(pclouds[0].shape[0]==3) else 0
     return np.amin([ np.amin(pcloud_i,axis=axis) 
                       for pcloud_i in pclouds],axis=0).T
@@ -102,4 +105,4 @@ def filter_empty(pclouds):
 
 
 if __name__ == "__main__":
-    full_proj("box","proj")
+    full_proj("../agum/MHAD/center","../agum/MHAD/proj")
