@@ -5,6 +5,9 @@ def box_frame(in_path,out_path):
     fun=[equal_box]#[extract_box]
     imgs.transform(in_path,out_path,fun,single_frame=False)
 
+def rescale_imgs(in_path,out_path):
+    imgs.transform(in_path,out_path,norm_z,single_frame=False)
+
 def norm_z(frames,max_value=240.0):
     frames=np.array(frames).astype(float)
     min_z,max_z=np.amin(frames),np.amax(frames)
