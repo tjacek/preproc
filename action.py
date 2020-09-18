@@ -11,9 +11,11 @@ class BuildActionImg(object):
         sub_imgs=[self.scale(img_i) for img_i in sub_imgs]
         return np.concatenate(sub_imgs,axis=0)
 
-#def many_action_img(in_path,out_path):
-#    helper=BuildActionImg([time_max])
-#    imgs.action_img(in_path,out_path,helper)
+def simple_action(in_path,out_path):
+    def helper(frames):
+        print(len(frames))
+        return np.mean(frames,axis=0)
+    imgs.action_img(in_path,out_path,helper)
 
 def outliner_action_img(in_path,out_path):
     helper=BuildActionImg([outliner_proj(0),outliner_proj(2),sub_sample])
@@ -68,4 +70,5 @@ def z_spot(i,img_i):
     return img_i
 
 #outliner_action_img("../MSR_exp1/box","../MSR_exp1/exp2/frames")
-outliner_action_img("box","test")
+#outliner_action_img("box","test")
+simple_action("../dataset/scale","scale")
