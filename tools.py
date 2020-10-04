@@ -1,5 +1,5 @@
 import numpy as np,cv2
-import imgs,proj
+import imgs,proj,files
 from scipy import ndimage
 
 def time(in_path,out_path):
@@ -26,13 +26,15 @@ def diff(frames):
 
 def rescale_imgs(in_path,out_path,dim_x=64,dim_y=128):
     rescale=proj.Scale(dim_x,dim_y)
-    imgs.transform(in_path,out_path,rescale,True)
+    if(files.dict_of_dicts(in_path)):
+        imgs.transform(in_path,out_path,rescale,True)
+    else:
+        imgs.transform_action_img(in_path,out_path,rescale)
 
 def median_smooth(img_i):
     if(type(img_i)==list):
         return [median_smooth(frame_i) for frame_i in img_i]
     return ndimage.median_filter(img_i ,7)
-
 
 def get_sample(seq_i):
     if(type(seq_i)==list):
@@ -52,6 +54,6 @@ def get_squared_dist(n):
     return dist
 
 if __name__ == "__main__":
-    in_path="../simple/bound/box"
-    out_path="../simple/bound/exp2/frames"
+    in_path="../rank/raw"
+    out_path="../rank/scale"
     rescale_imgs(in_path,out_path,dim_x=80,dim_y=128)

@@ -89,3 +89,11 @@ def concat_frames(in_path1,in_path2,out_path):
         img0,img1=seq1[name_i],seq2[name_i] 
         new_img_i=np.concatenate([img0,img1],axis=0)
         cv2.imwrite(out_path+'/'+name_i+".png",new_img_i)
+
+def transform_action_img(in_path,out_path,fun):
+    files.make_dir(out_path)
+    for in_i in files.top_files(in_path):
+        out_i="%s/%s" % (out_path,in_i.split('/')[-1])
+        img_i=cv2.imread(in_i, cv2.IMREAD_GRAYSCALE)
+        new_img_i=fun(img_i)
+        cv2.imwrite(out_i,new_img_i)

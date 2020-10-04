@@ -38,3 +38,7 @@ def filtr(seq_dict):
 def person_select(name_i):
     name_i=clean_str(name_i)
     return (int(name_i.split('_')[1]) % 2)==1
+
+def dict_of_dicts(in_path):
+    return all([ os.path.isdir(path_i)
+                for path_i in top_files(in_path)])
