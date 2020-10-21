@@ -42,16 +42,26 @@ def full_proj(seqs,out_path,kern_size=(3,3)):
     proj_funcs=[proj_factory(i) for i in range(3)]
     proj_template(seqs,out_path,proj_funcs)
 
-def proj_template(seqs,out_path,proj_funcs):
-    if(type(seqs)==str):
-        seqs=imgs.read_seqs(seqs)
+def proj_template(in_path,out_path,proj_funcs):
     files.make_dir(out_path)
-    for name_j,seq_i in seqs.items():
-        print(name_j)
+    paths=files.top_files(in_path)
+    for seq_path_i in paths:
+        print(seq_path_i)
+        seq_i=imgs.read_frames(seq_path_i,as_dict=False)
         proj_seq_i=[proj_i(seq_i) for proj_i in proj_funcs]
         new_imgs=np.concatenate(proj_seq_i,axis=1)
-        out_i="%s/%s" % (out_path,name_j)
+        out_i="%s/%s" % (out_path,seq_path_i.split("/")[-1])
         imgs.save_frames(out_i,new_imgs)
+#def proj_template(seqs,out_path,proj_funcs):
+#    if(type(seqs)==str):
+#        seqs=imgs.read_seqs(seqs)
+#    files.make_dir(out_path)
+#    for name_j,seq_i in seqs.items():
+#        print(name_j)
+#        proj_seq_i=[proj_i(seq_i) for proj_i in proj_funcs]
+#        new_imgs=np.concatenate(proj_seq_i,axis=1)
+#        out_i="%s/%s" % (out_path,name_j)
+#        imgs.save_frames(out_i,new_imgs)
 
 def nonzero_points(frame_i):
     xy_nonzero=np.nonzero(frame_i)
@@ -105,4 +115,4 @@ def filter_empty(pclouds):
 
 
 if __name__ == "__main__":
-    full_proj("../agum/MHAD/center","../agum/MHAD/proj")
+    full_proj("../action_agum_seq/seqs","../action_agum_seq/proj")
