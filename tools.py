@@ -53,7 +53,17 @@ def get_squared_dist(n):
     dist/=np.sum(dist)
     return dist
 
+def sigma_filtr(in_path,out_path):
+    def helper(img_i):
+        std_z= np.std(img_i)
+        value_i=np.mean(img_i)+0.5*std_z
+        print(value_i)
+        img_i[img_i< value_i]=0
+        return img_i 
+    imgs.transform(in_path,out_path,helper,True)
+
 if __name__ == "__main__":
-    in_path="../rank/raw"
-    out_path="../rank/scale"
-    rescale_imgs(in_path,out_path,dim_x=80,dim_y=128)
+    in_path="../forth/frames"
+    out_path="../forth/frames2"
+    sigma_filtr(in_path,out_path)
+#    rescale_imgs(in_path,out_path,dim_x=80,dim_y=128)
