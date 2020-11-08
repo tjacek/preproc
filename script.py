@@ -1,3 +1,4 @@
+import numpy as np
 import shutil,re
 import files,tools
 
@@ -28,10 +29,11 @@ def conv_seq(in_path,out_path):
 		lines=open(path_i,'r').readlines()
 		lines=[ ",".join(sep.split(line_i.strip())) 
 				for line_i in lines]
+		seq_i=np.array([np.fromstring(line_i,sep=",",dtype=float) 
+					for line_i in lines])
 		out_i=files.replace_path(path_i,out_path)
-		txt="\n".join(lines)
-		file_str = open(out_i,'w')
-		file_str.write(txt)
-		file_str.close()
+		out_i=out_i.split(".")[0]
+		print(out_i)
+		np.save(out_i,seq_i)
 
 conv_seq("../MSR_skeleton","skeleton")
