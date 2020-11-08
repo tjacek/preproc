@@ -1,8 +1,5 @@
-import shutil
+import shutil,re
 import files,tools
-
-in_path="../Hon4d"
-out_path="../MSR"
 
 def exp(in_path,out_path,in_dict="rank_rev"):
 	out_path="%s/%s" % (out_path,in_dict)
@@ -24,4 +21,17 @@ def reformat(in_path,out_path,in_dict="rank_rev"):
 			print(out_ij)
 			shutil.copyfile(in_ij, out_ij)
 
-exp(in_path,out_path,"rank_rot_rev")
+def conv_seq(in_path,out_path):
+	sep=re.compile("\s+")
+	files.make_dir(out_path)
+	for path_i in files.top_files(in_path):
+		lines=open(path_i,'r').readlines()
+		lines=[ ",".join(sep.split(line_i.strip())) 
+				for line_i in lines]
+		out_i=files.replace_path(path_i,out_path)
+		txt="\n".join(lines)
+		file_str = open(out_i,'w')
+		file_str.write(txt)
+		file_str.close()
+
+conv_seq("../MSR_skeleton","skeleton")

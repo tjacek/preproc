@@ -42,3 +42,7 @@ def person_select(name_i):
 def dict_of_dicts(in_path):
     return all([ os.path.isdir(path_i)
                 for path_i in top_files(in_path)])
+
+def replace_path(in_path,out_path):
+    file_i=in_path.split('/')[-1]
+    return "%s/%s" % (out_path,file_i)
