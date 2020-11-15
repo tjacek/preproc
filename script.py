@@ -32,8 +32,10 @@ def conv_seq(in_path,out_path):
 		seq_i=np.array([np.fromstring(line_i,sep=",",dtype=float) 
 					for line_i in lines])
 		seq_i= skeleton_reformat(seq_i)
+		print(seq_i.shape)
 		out_i=files.replace_path(path_i,out_path)
-		out_i=out_i.split(".")[0]
+		postfix=".%s" % out_i.split(".")[-1]
+		out_i=out_i.replace(postfix,"")
 		print(out_i)
 		np.save(out_i,seq_i)
 
@@ -41,7 +43,14 @@ def skeleton_reformat(seq_i,n_joints=20):
 	ts_len=int(seq_i.shape[0]/n_joints)
 	seqs=[seq_i[(i*ts_len):((i+1)*ts_len),:] 
 	    	for i in range(n_joints)]
-	seqs=np.concatenate(seqs,axis=1)
+	seqs=np.array([seq_i.flatten() for seq_i in seqs]).T
 	return seqs
 
-conv_seq("../MSR_skeleton","skeleton")
+#def skeleton_reformat(seq_i,n_joints=20):
+#	ts_len=int(seq_i.shape[0]/n_joints)
+#	seqs=[seq_i[(i*ts_len):((i+1)*ts_len),:] 
+#	    	for i in range(n_joints)]
+#	seqs=np.concatenate(seqs,axis=1)
+#	return seqs
+
+conv_seq("../skeleton/MSR","../skeleton/parsed")
