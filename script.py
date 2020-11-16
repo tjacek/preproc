@@ -41,9 +41,9 @@ def conv_seq(in_path,out_path):
 
 def skeleton_reformat(seq_i,n_joints=20):
 	ts_len=int(seq_i.shape[0]/n_joints)
-	seqs=[seq_i[(i*ts_len):((i+1)*ts_len),:] 
-	    	for i in range(n_joints)]
-	seqs=np.array([seq_i.flatten() for seq_i in seqs]).T
+	seqs=[seq_i[(i*n_joints):((i+1)*n_joints),:] 
+	    	for i in range(ts_len)]
+	seqs=np.array([seq_i.flatten() for seq_i in seqs])
 	return seqs
 
 #def skeleton_reformat(seq_i,n_joints=20):
