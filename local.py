@@ -13,16 +13,16 @@ def compute(in_path,out_path,upsample=False):
 
 def extract(frames,feat_type='max_z'):
     pclouds=prepare_pclouds(frames)
-    if(feat_type=='max_z'):
-        feats0=np.array([max_z(pcloud_i) for pcloud_i in pclouds])
-        return feats0
-#    pclouds=outliner(pclouds)
-#    feats0=np.array([max_z(pcloud_i) for pcloud_i in pclouds])
+#    if(feat_type=='max_z'):
+#        feats0=np.array([max_z(pcloud_i) for pcloud_i in pclouds])
+#        return feats0
+    pclouds=outliner(pclouds)
+#    feats=np.array([max_z(pcloud_i) for pcloud_i in pclouds])
 #    feats1=np.array([skew_feat(pcloud_i) for pcloud_i in pclouds])
 #    feats2=np.array([corl(pcloud_i) for pcloud_i in pclouds])
-#    feats3=np.array([std_feat(pcloud_i) for pcloud_i in pclouds])
+    feats3=np.array([std_feat(pcloud_i) for pcloud_i in pclouds])
 #    full=np.concatenate([feats0,feats1,feats2,feats3],axis=1)
-#    return feats3
+    return feats3
 
 def prepare_pclouds(frames):
     pc_frames=[pclouds.nonzero_points(frame_i) for frame_i in frames]
@@ -60,4 +60,4 @@ def corl(points):
     return [pearsonr(x,y)[0],pearsonr(z,y)[0],pearsonr(x,z)[0]]
 
 
-compute("../MHAD3/box","../MHAD3/seqs/max_z")
+compute("../dtw/frames","../dtw/seqs/std")
