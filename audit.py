@@ -1,14 +1,18 @@
-import imgs
+#import imgs
+import os,os.path
 
-def seq_len(in_path):
-	img_dict=imgs.read_seqs(in_path)
-	for seq_i in img_dict.values():
-		print(seq_i[0].shape)
+def count_files(in_path):
+    return len(os.listdir(in_path))
 
-def action_shape(in_path):
-	frames=imgs.read_frames(in_path)
-	for frame_i in frames:
-		print(frame_i.shape)	
+#def seq_len(in_path):
+#	img_dict=imgs.read_seqs(in_path)
+#	for seq_i in img_dict.values():
+#		print(seq_i[0].shape)
 
-in_path="../msr_rank"
-action_shape(in_path)
+#def action_shape(in_path):
+#	frames=imgs.read_frames(in_path)
+#	for frame_i in frames:
+#		print(frame_i.shape)	
+
+in_path="../CZU-MHAD/CZU-MHAD/depth_mat"
+print(count_files(in_path))
