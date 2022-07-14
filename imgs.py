@@ -9,10 +9,14 @@ class DataDict(dict):
         keys=sorted(self.keys(),key=files.natural_keys) 
         return files.NameList(keys)
     
-    def transform(self,fun,copy=False):
+    def transform(self,fun,copy=False,single=False):
         new_dict= self.__class__() if(copy) else self
         for name_i,data_i in self.items():
-            new_dict[name_i]=fun(data_i)
+            if(single):
+                new_dict[name_i]=[fun(frame_j)
+                    for frame_j in data_i]
+            else:
+                new_dict[name_i]=fun(data_i)
         return new_dict
 
     def save(self,out_path):

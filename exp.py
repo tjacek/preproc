@@ -16,14 +16,16 @@ def dir_funtion(func):
             func(in_i,out_i)
     return helper
 
-def frame_exp(func):
-    @wraps(func)
-    def helper(in_path,out_path):
-        data_dict=imgs.read_seqs(in_path)
-        data_dict.transform(func)
-        data_dict.save(out_path)
-        return data_dict
-    return helper
+def frame_exp(single=False):
+    def decorator(func):
+        @wraps(func)
+        def helper(in_path,out_path):
+            data_dict=imgs.read_seqs(in_path)
+            data_dict.transform(func,single=single)
+            data_dict.save(out_path)
+            return data_dict
+        return helper
+    return decorator
 
 #def action_exp(in_path,out_path,use_agum=False):
 #    files.make_dir(out_path)
