@@ -2,8 +2,9 @@ import numpy as np
 import cv2
 import exp
 
-#exp.frame_exp()
+@exp.eff_frame_exp()
 def bg_substr(frames):
+    print(len(frames))
     diff_frames=mog_sub(frames)
     frame_cc=[ccomponent(frame_i)  
         for frame_i in diff_frames]
@@ -27,11 +28,11 @@ def mog_sub(frames):
 
 #@exp.frame_exp(single=True)
 def ccomponent(img_i):
-    print(img_i.shape)
+#    print(img_i.shape)
     thres = cv2.threshold(img_i,100,255,cv2.THRESH_BINARY)[1]
     max_cc,labels,stats=cc_raw(thres)
     cc_i= (labels==max_cc).astype("uint8")*255
-    print(cc_i.shape)
+#    print(cc_i.shape)
     return cc_i
 
 def cc_raw(thres):
@@ -41,5 +42,7 @@ def cc_raw(thres):
     max_cc=np.argsort(area)[-2]
     return max_cc,labels,stats[max_cc]
 
-in_path="../CZU-MHAD/test"
-exp.frame_exp()(bg_substr)(in_path,"test2")
+in_path="../CZU-MHAD/CZU-MHAD/depth"
+out_path="../CZU-MHAD/CZU-MHAD/persons"
+
+bg_substr(in_path,out_path)
