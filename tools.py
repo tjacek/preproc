@@ -2,13 +2,13 @@ import numpy as np,cv2
 import imgs,proj,files
 from scipy import ndimage
 
-def time(in_path,out_path):
-    def helper(frames):
-        size=len(frames)
-        return [ np.concatenate([frames[i-1],frames[i]],axis=0) 
-                    for i in range(1,size)]
-    transform=[proj.scale,helper]                
-    imgs.transform(in_path,out_path,transform,single_frame=False)
+#def time(in_path,out_path):
+#    def helper(frames):
+#        size=len(frames)
+#        return [ np.concatenate([frames[i-1],frames[i]],axis=0) 
+#                    for i in range(1,size)]
+#    transform=[proj.scale,helper]                
+#    imgs.transform(in_path,out_path,transform,single_frame=False)
 
 def diff_img(in_path,out_path):
     fun=[mean_y,get_rescale(96,64)]
@@ -24,12 +24,12 @@ def diff(frames):
     return [ np.abs(frames[i] -frames[i-1])
                 for i in range(1,len(frames))]
 
-def rescale_imgs(in_path,out_path,dim_x=64,dim_y=128):
-    rescale=proj.Scale(dim_x,dim_y)
-    if(files.dict_of_dicts(in_path)):
-        imgs.transform(in_path,out_path,rescale,True)
-    else:
-        imgs.transform_action_img(in_path,out_path,rescale)
+#def rescale_imgs(in_path,out_path,dim_x=64,dim_y=128):
+#    rescale=proj.Scale(dim_x,dim_y)
+#    if(files.dict_of_dicts(in_path)):
+#        imgs.transform(in_path,out_path,rescale,True)
+#    else:
+#        imgs.transform_action_img(in_path,out_path,rescale)
 
 def median_smooth(img_i):
     if(type(img_i)==list):

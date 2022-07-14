@@ -1,6 +1,46 @@
 import cv2,numpy as np#,os.path
 import files
 
+class DataDict(dict):
+    def __init__(self, arg=[]):
+        super(DataDict, self).__init__(arg)
+    
+    def names(self):
+        keys=sorted(self.keys(),key=files.natural_keys) 
+        return files.NameList(keys)
+    
+    def transform(self,fun,copy=False):
+        new_dict= self.__class__() if(copy) else self
+        for name_i,data_i in self.items():
+            new_dict[name_i]=fun(data_i)
+        return new_dict
+
+    def save(self,out_path):
+        save_seqs(self,out_path)
+
+def read_seqs(in_path):
+    seqs=DataDict()
+    for seq_path_i in files.top_files(in_path):
+        name_i=seq_path_i.split('/')[-1]
+        seqs[name_i]=read_frames(seq_path_i)
+    return seqs 
+
+def read_frames(seq_path_i):
+    return [ cv2.imread(path_j, cv2.IMREAD_GRAYSCALE)
+                for path_j in files.top_files(seq_path_i)]
+
+def save_seqs(seq_dict,out_path):
+    files.make_dir(out_path)
+    for name_i,seq_i in seq_dict.items():
+        seq_path_i=f"{out_path}/{name_i}"
+        save_frames(seq_path_i,seq_i)
+
+def save_frames(seq_path_i,seq_i):
+    files.make_dir(seq_path_i)
+    for j,frame_j in enumerate(seq_i):     
+        frame_name_j=f"{seq_path_i}/{j}.png" 
+        cv2.imwrite(frame_name_j,frame_j)
+
 class Pipeline(object):
     def __init__(self,transforms):
         self.transforms=transforms
@@ -11,20 +51,20 @@ class Pipeline(object):
             frame_i=transform_j(frame_i)
         return frame_i
 
-def transform(in_path,out_path,frame_fun,single_frame=False):
-    if(type(frame_fun)==list):
-        frame_fun=Pipeline(frame_fun)
-    files.make_dir(out_path)
-    print(in_path)
-    for in_i in files.top_files(in_path):
-        out_i=out_path+'/'+in_i.split('/')[-1]
-        print(out_i)
-        frames=read_frames(in_i)
-        if(single_frame):
-            new_frames=[frame_fun(frame_j) for frame_j in frames]
-        else:
-            new_frames=frame_fun(frames)
-        save_frames(out_i,new_frames)
+#def transform(in_path,out_path,frame_fun,single_frame=False):
+#    if(type(frame_fun)==list):
+#        frame_fun=Pipeline(frame_fun)
+#    files.make_dir(out_path)
+#    print(in_path)
+#    for in_i in files.top_files(in_path):
+#        out_i=out_path+'/'+in_i.split('/')[-1]
+#        print(out_i)
+#        frames=read_frames(in_i)
+#        if(single_frame):
+#            new_frames=[frame_fun(frame_j) for frame_j in frames]
+#        else:
+#            new_frames=frame_fun(frames)
+#        save_frames(out_i,new_frames)
 
 def action_img(in_path,out_path,action_fun):
     if(type(action_fun)==list):
@@ -41,34 +81,6 @@ def seq_tranform(frame_fun,img_seqs):
         frame_fun=Pipeline(frame_fun)
     return { name_i:[frame_fun(frame_j) for frame_j in seq_i]
                     for name_i,seq_i in img_seqs.items()}
-
-def read_seqs(in_path):
-    seqs={}
-    for seq_path_i in files.top_files(in_path):
-        frames=read_frames(seq_path_i)
-        name_i=seq_path_i.split('/')[-1]
-        print(name_i)
-        seqs[name_i]=frames
-    return seqs    
-
-def save_seqs(seq_dict,out_path):
-    files.make_dir(out_path)
-    for name_i,seq_i in seq_dict.items():
-        seq_path_i=out_path+'/'+name_i
-        save_frames(seq_path_i,seq_i)
-
-def read_frames(seq_path_i,as_dict=False):
-    if(as_dict):
-        return {files.clean_str(path_j):cv2.imread(path_j,cv2.IMREAD_GRAYSCALE)
-                    for path_j in files.top_files(seq_path_i)}
-    return [ cv2.imread(path_j, cv2.IMREAD_GRAYSCALE)
-                for path_j in files.top_files(seq_path_i)]
-
-def save_frames(seq_path_i,seq_i):
-    files.make_dir(seq_path_i)
-    for j,frame_j in enumerate(seq_i):     
-        frame_name_j="%s/%d.png" % (seq_path_i,j)  
-        cv2.imwrite(frame_name_j,frame_j)
 
 def concat_seq(in_path1,in_path2,out_path):
     seq1,seq2=read_seqs(in_path1),read_seqs(in_path2)
@@ -97,3 +109,8 @@ def transform_action_img(in_path,out_path,fun):
         img_i=cv2.imread(in_i, cv2.IMREAD_GRAYSCALE)
         new_img_i=fun(img_i)
         cv2.imwrite(out_i,new_img_i)
+
+if __name__ == "__main__":
+    in_path="../CZU-MHAD/test"
+    data_dict=read_seqs(in_path)
+    print(data_dict.names())

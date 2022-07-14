@@ -2,9 +2,10 @@ import numpy as np
 import os,os.path
 from functools import wraps
 import files
-from input.binary import convert
+import input.binary,imgs #import convert
 #import agum.seqs,agum.action
 #import input.box,tools,imgs,proj
+
 def dir_funtion(func):
     @wraps(func)
     def helper(in_path,out_path):
@@ -15,6 +16,14 @@ def dir_funtion(func):
             func(in_i,out_i)
     return helper
 
+def frame_exp(func):
+    @wraps(func)
+    def helper(in_path,out_path):
+        data_dict=imgs.read_seqs(in_path)
+        data_dict.transform(func)
+        data_dict.save(out_path)
+        return data_dict
+    return helper
 
 #def action_exp(in_path,out_path,use_agum=False):
 #    files.make_dir(out_path)
@@ -40,8 +49,10 @@ def dir_funtion(func):
 #    return { path_i:"%s/%s" % (dir_path,path_i) 
 #                for path_i in names}
 
-in_path="../CZU-MHAD/test_math"
-out_path="../CZU-MHAD/test"
-
-exp_conv=dir_funtion(convert)
-exp_conv(in_path,out_path)
+if __name__ == "__main__":
+    in_path="../CZU-MHAD/test_math"
+    out_path="../CZU-MHAD/test"
+#    exp_conv=dir_funtion(input.binary.convert)
+#    exp_conv(in_path,out_path)
+    import tools
+    frame_exp(tools.diff)(out_path,"test")
