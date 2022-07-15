@@ -1,4 +1,5 @@
 import numpy as np
+import cv2
 import os,os.path
 from functools import wraps
 import files
@@ -27,17 +28,33 @@ def frame_exp(single=False):
         return helper
     return decorator
 
-#def action_exp(in_path,out_path,use_agum=False):
-#    files.make_dir(out_path)
-#    paths= get_paths(out_path,["action","agum"])
-#    def helper(frames):
-#        action_img=np.mean(frames,axis=0)
-#        return action_img#.astype('uint8')
-#    fun=[helper,proj.Scale()]
-#    imgs.action_img(in_path,paths["action"],fun)
-#    if(use_agum):
-#        agum_fun=agum.action.get_action_agum()
-#        agum_fun(paths["action"],paths["agum"])
+def eff_frame_exp(single=False):
+    def decorator(func):
+        @wraps(func)
+        def helper(in_path,out_path):
+            files.make_dir(out_path)
+            for path_i in files.top_files(in_path):
+                frames=imgs.read_frames(path_i)
+                frames= func(frames)
+                out_i=f"{out_path}/{path_i.split('/')[-1]}"
+                imgs.save_frames(out_i,frames)
+            return frames
+        return helper
+    return decorator
+
+def eff_action_exp(single=False):
+    def decorator(func):
+        @wraps(func)
+        def helper(in_path,out_path):
+            files.make_dir(out_path)
+            for path_i in files.top_files(in_path):
+                frames=imgs.read_frames(path_i)
+                action_img= func(frames)
+                out_i=f"{out_path}/{path_i.split('/')[-1]}.png"
+                cv2.imwrite(out_i,action_img)
+            return frames
+        return helper
+    return decorator
 
 #def exp(in_path):
 #    dir_path=os.path.split(dir_path)[0]
@@ -52,9 +69,9 @@ def frame_exp(single=False):
 #                for path_i in names}
 
 if __name__ == "__main__":
-    in_path="../CZU-MHAD/test_math"
-    out_path="../CZU-MHAD/test"
-#    exp_conv=dir_funtion(input.binary.convert)
-#    exp_conv(in_path,out_path)
-    import tools
-    frame_exp(tools.diff)(out_path,"test")
+    in_path="../CZU-MHAD/CZU-MHAD/depth_mat"
+    out_path="../CZU-MHAD/CZU-MHAD/depth"
+    exp_conv=dir_funtion(input.binary.convert)
+    exp_conv(in_path,out_path)
+#    import tools
+#    frame_exp(tools.diff)(out_path,"test")
