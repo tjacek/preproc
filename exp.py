@@ -33,7 +33,8 @@ def eff_frame_exp(single=False):
         @wraps(func)
         def helper(in_path,out_path):
             files.make_dir(out_path)
-            for path_i in files.top_files(in_path):
+            for i,path_i in enumerate(files.top_files(in_path)):
+                print(f"{i}:{path_i.split('/')[-1]}")
                 frames=imgs.read_frames(path_i)
                 frames= func(frames)
                 out_i=f"{out_path}/{path_i.split('/')[-1]}"
@@ -47,7 +48,8 @@ def eff_action_exp(single=False):
         @wraps(func)
         def helper(in_path,out_path):
             files.make_dir(out_path)
-            for path_i in files.top_files(in_path):
+            for i,path_i in enumerate(files.top_files(in_path)):
+                print(f"{i}:{path_i.split('/')[-1]}")
                 frames=imgs.read_frames(path_i)
                 action_img= func(frames)
                 out_i=f"{out_path}/{path_i.split('/')[-1]}.png"
