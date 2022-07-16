@@ -7,6 +7,15 @@ import input.binary,imgs #import convert
 #import agum.seqs,agum.action
 #import input.box,tools,imgs,proj
 
+class Pipeline(object):
+    def __init__(self,transforms):
+        self.transforms=transforms
+
+    def __call__(self,frame_i):
+        for transform_j in self.transforms:#[1:]:
+            frame_i=transform_j(frame_i)
+        return frame_i
+
 def dir_funtion(func):
     @wraps(func)
     def helper(in_path,out_path):

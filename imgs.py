@@ -45,31 +45,6 @@ def save_frames(seq_path_i,seq_i):
         frame_name_j=f"{seq_path_i}/{j}.png" 
         cv2.imwrite(frame_name_j,frame_j)
 
-class Pipeline(object):
-    def __init__(self,transforms):
-        self.transforms=transforms
-
-    def __call__(self,frame_i):
-        frame_i=self.transforms[0](frame_i)
-        for transform_j in self.transforms[1:]:
-            frame_i=transform_j(frame_i)
-        return frame_i
-
-#def transform(in_path,out_path,frame_fun,single_frame=False):
-#    if(type(frame_fun)==list):
-#        frame_fun=Pipeline(frame_fun)
-#    files.make_dir(out_path)
-#    print(in_path)
-#    for in_i in files.top_files(in_path):
-#        out_i=out_path+'/'+in_i.split('/')[-1]
-#        print(out_i)
-#        frames=read_frames(in_i)
-#        if(single_frame):
-#            new_frames=[frame_fun(frame_j) for frame_j in frames]
-#        else:
-#            new_frames=frame_fun(frames)
-#        save_frames(out_i,new_frames)
-
 def action_img(in_path,out_path,action_fun):
     if(type(action_fun)==list):
         action_fun=Pipeline(action_fun)

@@ -2,6 +2,16 @@ import numpy as np,cv2
 import imgs,proj,files
 from scipy import ndimage
 
+class CutImage(object):
+    def __init__(self,point,dims):
+        self.point=point
+        self.dims=dims
+
+    def __call__(self,img_i):
+        x0,y0=self.point[0],self.point[0]+self.dims[0]
+        x1,y1=self.point[1],self.point[1]+self.dims[1]
+        return img_i[x0:y0,x1:y1] 
+
 #def time(in_path,out_path):
 #    def helper(frames):
 #        size=len(frames)
