@@ -1,5 +1,5 @@
 import cv2,numpy as np#,os.path
-import files
+import files,tools,exp
 
 class DataDict(dict):
     def __init__(self, arg=[]):
@@ -45,15 +45,21 @@ def save_frames(seq_path_i,seq_i):
         frame_name_j=f"{seq_path_i}/{j}.png" 
         cv2.imwrite(frame_name_j,frame_j)
 
-def action_img(in_path,out_path,action_fun):
-    if(type(action_fun)==list):
-        action_fun=Pipeline(action_fun)
-    files.make_dir(out_path)
-    for in_i in files.top_files(in_path):
-        frames=read_frames(in_i)
-        action_img_i=action_fun(frames)
-        out_i="%s/%s.png" % (out_path,in_i.split('/')[-1])
-        cv2.imwrite(out_i,action_img_i)
+def preproc_frames(in_path,out_path):
+    fun=[tools.CutImage((80,150),(240,200)),
+         tools.Rescale((128,96))]
+    fun=exp.Pipeline(fun)
+    fun=exp.eff_frame_exp(single=True)(fun)
+    fun(in_path,out_path)
+#def action_img(in_path,out_path,action_fun):
+#    if(type(action_fun)==list):
+#        action_fun=Pipeline(action_fun)
+#    files.make_dir(out_path)
+#    for in_i in files.top_files(in_path):
+#        frames=read_frames(in_i)
+#        action_img_i=action_fun(frames)
+#        out_i="%s/%s.png" % (out_path,in_i.split('/')[-1])
+#        cv2.imwrite(out_i,action_img_i)
 
 def seq_tranform(frame_fun,img_seqs):
     if(type(frame_fun)==list):
@@ -81,15 +87,15 @@ def concat_frames(in_path1,in_path2,out_path):
         new_img_i=np.concatenate([img0,img1],axis=0)
         cv2.imwrite(out_path+'/'+name_i+".png",new_img_i)
 
-def transform_action_img(in_path,out_path,fun):
-    files.make_dir(out_path)
-    for in_i in files.top_files(in_path):
-        out_i="%s/%s" % (out_path,in_i.split('/')[-1])
-        img_i=cv2.imread(in_i, cv2.IMREAD_GRAYSCALE)
-        new_img_i=fun(img_i)
-        cv2.imwrite(out_i,new_img_i)
+#def transform_action_img(in_path,out_path,fun):
+#    files.make_dir(out_path)
+#    for in_i in files.top_files(in_path):
+#        out_i="%s/%s" % (out_path,in_i.split('/')[-1])
+#        img_i=cv2.imread(in_i, cv2.IMREAD_GRAYSCALE)
+#        new_img_i=fun(img_i)
+#        cv2.imwrite(out_i,new_img_i)
 
 if __name__ == "__main__":
-    in_path="../CZU-MHAD/test"
-    data_dict=read_seqs(in_path)
-    print(data_dict.names())
+    in_path="../CZU-MHAD/CZU-MHAD/depth"
+    out_path="../CZU-MHAD/CZU-MHAD/final"
+    preproc_frames(in_path,out_path)

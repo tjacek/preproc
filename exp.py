@@ -45,7 +45,11 @@ def eff_frame_exp(single=False):
             for i,path_i in enumerate(files.top_files(in_path)):
                 print(f"{i}:{path_i.split('/')[-1]}")
                 frames=imgs.read_frames(path_i)
-                frames= func(frames)
+                if(single):
+                    frames=[func(frame_i)
+                        for frame_i in frames]
+                else:
+                    frames=func(frames)
                 out_i=f"{out_path}/{path_i.split('/')[-1]}"
                 imgs.save_frames(out_i,frames)
             return frames

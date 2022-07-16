@@ -12,9 +12,8 @@ class BuildActionImg(object):
         sub_imgs=[self.scale(img_i) for img_i in sub_imgs]
         return np.concatenate(sub_imgs,axis=0)
 
-#@exp.eff_action_exp()
+@exp.eff_action_exp()
 def mean_action(frames):
-    print(len(frames))
     return np.mean(frames,axis=0)
 
 def cut_action(in_path,out_path,point,dim):
@@ -69,6 +68,7 @@ def z_spot(i,img_i):
     return img_i
 
 if __name__ == "__main__":
-    in_path="../CZU-MHAD/CZU-MHAD/depth" 
-    out_path="../CZU-MHAD/CZU-MHAD/mean_full" 
-    cut_action(in_path,out_path,(80,150),(240,200))
+    in_path="../CZU-MHAD/CZU-MHAD/final" 
+    out_path="../CZU-MHAD/CZU-MHAD/mean_final"
+    mean_action(in_path,out_path)
+#    cut_action(in_path,out_path,(80,150),(240,200))

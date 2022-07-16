@@ -11,8 +11,9 @@ def bg_substr(frames):
     mean_img=np.mean(frame_cc,axis=0)
     mean_img[mean_img!=0]=150
     mean_img= mean_img.astype("uint8")
-    max_cc,labels,stats=cc_raw(mean_img)
-    x,y,w,h,_=stats
+#    max_cc,labels,stats=cc_raw(mean_img)
+#    x,y,w,h,_=stats
+    x,y,w,h = cv2.boundingRect(mean_img)
     return [frame_i[y:y+w,x:x+h] 
               for frame_i in frames]
 

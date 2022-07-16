@@ -2,6 +2,13 @@ import numpy as np,cv2
 import imgs,proj,files
 from scipy import ndimage
 
+class Rescale(object):
+    def __init__(self,dims):
+        self.dims=dims
+
+    def __call__(self,img_i):
+        return cv2.resize(img_i, self.dims) 
+
 class CutImage(object):
     def __init__(self,point,dims):
         self.point=point
@@ -10,6 +17,7 @@ class CutImage(object):
     def __call__(self,img_i):
         x0,y0=self.point[0],self.point[0]+self.dims[0]
         x1,y1=self.point[1],self.point[1]+self.dims[1]
+        print(type(img_i))
         return img_i[x0:y0,x1:y1] 
 
 #def time(in_path,out_path):
@@ -34,13 +42,6 @@ def diff(frames):
     return [ np.abs(frames[i] -frames[i-1])
                 for i in range(1,len(frames))]
 
-#def rescale_imgs(in_path,out_path,dim_x=64,dim_y=128):
-#    rescale=proj.Scale(dim_x,dim_y)
-#    if(files.dict_of_dicts(in_path)):
-#        imgs.transform(in_path,out_path,rescale,True)
-#    else:
-#        imgs.transform_action_img(in_path,out_path,rescale)
-
 def median_smooth(img_i):
     if(type(img_i)==list):
         return [median_smooth(frame_i) for frame_i in img_i]
@@ -63,14 +64,14 @@ def get_squared_dist(n):
     dist/=np.sum(dist)
     return dist
 
-def sigma_filtr(in_path,out_path):
-    def helper(img_i):
-        std_z= np.std(img_i)
-        value_i=np.mean(img_i)+0.5*std_z
-        print(value_i)
-        img_i[img_i< value_i]=0
-        return img_i 
-    imgs.transform(in_path,out_path,helper,True)
+#def sigma_filtr(in_path,out_path):
+#    def helper(img_i):
+#        std_z= np.std(img_i)
+#        value_i=np.mean(img_i)+0.5*std_z
+#        print(value_i)
+#        img_i[img_i< value_i]=0
+#        return img_i 
+#    imgs.transform(in_path,out_path,helper,True)
 
 if __name__ == "__main__":
     in_path="../forth/frames"
